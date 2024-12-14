@@ -15,7 +15,7 @@ def snake_game():
 
     # Yılanın başlangıç konumu
     snake = [[10, 15], [10, 14], [10, 13]]
-    snake_direction = curses.KEY_RIGHT
+    snake_direction = 'D'  # D sağa, A sola, W yukarı, S aşağı
 
     # İlk yem
     food = [random.randint(1, height - 2), random.randint(1, width - 2)]
@@ -23,18 +23,25 @@ def snake_game():
 
     while True:
         next_key = window.getch()
-        if next_key in [curses.KEY_RIGHT, curses.KEY_LEFT, curses.KEY_UP, curses.KEY_DOWN]:
-            snake_direction = next_key
+        next_key = chr(next_key).upper() if next_key != -1 else snake_direction
+        
+        if next_key in ['W', 'A', 'S', 'D']:
+            # Karşı yöne doğru hareketi engelle
+            if (snake_direction == 'W' and next_key != 'S') or \
+               (snake_direction == 'S' and next_key != 'W') or \
+               (snake_direction == 'A' and next_key != 'D') or \
+               (snake_direction == 'D' and next_key != 'A'):
+                snake_direction = next_key
 
         # Yeni kafa pozisyonu
         head = snake[0]
-        if snake_direction == curses.KEY_RIGHT:
+        if snake_direction == 'D':
             new_head = [head[0], head[1] + 1]
-        elif snake_direction == curses.KEY_LEFT:
+        elif snake_direction == 'A':
             new_head = [head[0], head[1] - 1]
-        elif snake_direction == curses.KEY_UP:
+        elif snake_direction == 'W':
             new_head = [head[0] - 1, head[1]]
-        elif snake_direction == curses.KEY_DOWN:
+        elif snake_direction == 'S':
             new_head = [head[0] + 1, head[1]]
 
         # Yılanın kendini yemesi veya duvara çarpması
@@ -43,7 +50,7 @@ def snake_game():
             new_head[0] >= height - 1 or new_head[1] >= width - 1):
             break
 
-        # Yılanın büyümesi
+        # Yılanın büyüemesi
         snake.insert(0, new_head)
         if new_head == food:
             food = [random.randint(1, height - 2), random.randint(1, width - 2)]
